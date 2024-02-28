@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 function Nav({ loginStatus, setLoginStatus }) {
     let authLink = <>
-        <Link to="/signup"><p>Sign Up</p></Link>
-        <Link to="/signin"><p>Sign In</p></Link>
+        <Link to="/signup">Sign Up</Link>
+        <Link to="/signin">Sign In</Link>
     </>;
 
     if (loginStatus) {

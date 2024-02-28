@@ -1,3 +1,8 @@
 export default function About() {
-    return <h1>This is the About React component.</h1>;
+    return (
+        <>
+            <p>This is a school project, but hopefully also a fun game to play.</p>
+            <p>Hasbro don&apos;t sue plox.</p>
+        </>
+    );
 }

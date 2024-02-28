@@ -14,7 +14,6 @@ export default function App() {
     return (
         <>
             <Nav loginStatus={loginStatus} setLoginStatus={setLoginStatus} />
-            <h1>This is the App React component.</h1>
             <Routes>
                 <Route path="/" element={<HowToPlay />} />
                 <Route path="/about" element={<About />} />
