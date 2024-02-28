@@ -27,6 +27,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 let livereloadServer = undefined;
@@ -43,7 +44,8 @@ if (process.env.ON_HEROKU === "false") {
 
 // Mount controllers
 
-// <Not yet>
+const usersCtrl = require('./controllers/users');
+app.use('/api/users', usersCtrl);
 
 // Non-REST routes
 
