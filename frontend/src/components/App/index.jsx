@@ -3,10 +3,12 @@ import { Route, Routes } from "react-router-dom";
 
 import './styles.css';
 import Nav from '../Nav';
-import About from "../About";
 import HowToPlay from "../HowToPlay";
+import About from "../About";
+import Cards from "../Cards";
 import SignUp from "../SignUp";
 import SignIn from "../SignIn";
+import CardCreateEdit from "../CardCreateEdit";
 
 export default function App() {
     const [loginStatus, setLoginStatus] = useState(false);
@@ -17,6 +19,8 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<HowToPlay />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/cards" element={<Cards loginStatus={loginStatus} />} />
+                <Route path="/cards/new" element={<CardCreateEdit loginStatus={loginStatus} />} />
                 <Route path="/signup" element={<SignUp setLoginStatus={setLoginStatus} />} />
                 <Route path="/signin" element={<SignIn setLoginStatus={setLoginStatus} />} />
             </Routes>

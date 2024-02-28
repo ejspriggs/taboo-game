@@ -2,13 +2,17 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 function Nav({ loginStatus, setLoginStatus }) {
-    let authLink = <>
+    let cardsLink = <></>;
+    let authLinks = <>
         <Link to="/signup">Sign Up</Link>
         <Link to="/signin">Sign In</Link>
     </>;
 
     if (loginStatus) {
-        authLink = <button
+        cardsLink = <>
+                <Link to="/cards">Cards</Link>
+            </>;
+        authLinks = <button
             onClick={ () => {
                 localStorage.removeItem("userToken");
                 setLoginStatus(false);
@@ -19,7 +23,8 @@ function Nav({ loginStatus, setLoginStatus }) {
         <nav>
             <Link to="/">Home</Link>
             <Link to="/about">About</Link>
-            {authLink}
+            {cardsLink}
+            {authLinks}
         </nav>
     );
 }
