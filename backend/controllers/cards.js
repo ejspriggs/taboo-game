@@ -47,6 +47,13 @@ router.post("/", authMiddleware, (req, res) => {
     }).then( result => res.json(result) );
 });
 
+router.get("/:cardId", authMiddleware, (req, res) => {
+    console.log("getting card: " + req.params.cardId);
+    cardModel.findById(req.params.cardId).then( card => {
+        res.json(card);
+    });
+});
+
 router.put("/:cardId", authMiddleware, (req, res) => {
     cardModel.findByIdAndUpdate(req.params.cardId, {
         target: req.body.target,

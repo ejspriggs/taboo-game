@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { addCard, editCard, getCard } from "../../../utils/backend";
 
-function CardCreateEdit({ loginStatus }) {
+function CardCreateEdit({ edit, loginStatus }) {
     const [formData, setFormData] = useState({
         target: "",
         blocker1: "",
@@ -14,11 +15,27 @@ function CardCreateEdit({ loginStatus }) {
     });
 
     const navigate = useNavigate();
+    const params = useParams();
 
     useEffect( () => {
         if (!loginStatus) {
             navigate("/signin");
+        } else {
+            if (edit) {
+                getCard(params.cardId).then( (existingCard) => {
+                    setFormData({
+                        target: existingCard.target,
+                        blocker1: existingCard.blockers[0],
+                        blocker2: existingCard.blockers[1],
+                        blocker3: existingCard.blockers[2],
+                        blocker4: existingCard.blockers[3],
+                        blocker5: existingCard.blockers[4],
+                        bgColor: "federal-blue"
+                    });
+                });
+            }
         }
+        
     }, [loginStatus, navigate]);
 
     function handleInputChange(event) {
@@ -27,8 +44,15 @@ function CardCreateEdit({ loginStatus }) {
 
     async function handleSubmit(event) {
         event.preventDefault();
-        // Backend interaction goes here
-        console.log(formData);
+        if (edit) {
+            editCard(params.cardId, formData).then( () => {
+                navigate("/cards");
+            });
+        } else {
+            addCard(formData).then( () => {
+                navigate("/cards");
+            });
+        }
     }
 
     return (
@@ -65,6 +89,7 @@ function CardCreateEdit({ loginStatus }) {
 }
 
 CardCreateEdit.propTypes = {
+    edit: PropTypes.bool.isRequired,
     loginStatus: PropTypes.bool.isRequired
 }
 
