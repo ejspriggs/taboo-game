@@ -66,7 +66,7 @@ function CardCreateEdit({ edit, loginStatus }) {
     if (edit === false || loaded === true) {
         result = <>
             <p className="text-4xl text-center py-4">Card Details</p>
-            <div className="text-center">
+            <div className="text-center w-4/5 mx-auto">
                 <div>
                     <button
                         className={"bg-federal-blue hover:text-black hover:bg-slate-300 font-medium rounded-lg text-sm px-2 py-2 " + (formData.bgColor === "federal-blue" ? "border-4 border-slate-700" : "m-1")}
@@ -98,17 +98,17 @@ function CardCreateEdit({ edit, loginStatus }) {
                     className="m-4 p-4 bg-floral-white border-black border-2 rounded-xl"
                     onSubmit={handleSubmit}
                 >
-                    <input className="text-center bg-floral-white" type="text" id="target" name="target" value={formData.target} onChange={handleInputChange} placeholder="target" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="target" name="target" value={formData.target} onChange={handleInputChange} placeholder="target" required />
                     <hr />
-                    <input className="text-center bg-floral-white" type="text" id="blocker1" name="blocker1" value={formData.blocker1} onChange={handleInputChange} placeholder="blocker 1" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="blocker1" name="blocker1" value={formData.blocker1} onChange={handleInputChange} placeholder="blocker 1" required />
                     <br />
-                    <input className="text-center bg-floral-white" type="text" id="blocker2" name="blocker2" value={formData.blocker2} onChange={handleInputChange} placeholder="blocker 2" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="blocker2" name="blocker2" value={formData.blocker2} onChange={handleInputChange} placeholder="blocker 2" required />
                     <br />
-                    <input className="text-center bg-floral-white" type="text" id="blocker3" name="blocker3" value={formData.blocker3} onChange={handleInputChange} placeholder="blocker 3" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="blocker3" name="blocker3" value={formData.blocker3} onChange={handleInputChange} placeholder="blocker 3" required />
                     <br />
-                    <input className="text-center bg-floral-white" type="text" id="blocker4" name="blocker4" value={formData.blocker4} onChange={handleInputChange} placeholder="blocker 4" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="blocker4" name="blocker4" value={formData.blocker4} onChange={handleInputChange} placeholder="blocker 4" required />
                     <br />
-                    <input className="text-center bg-floral-white" type="text" id="blocker5" name="blocker5" value={formData.blocker5} onChange={handleInputChange} placeholder="blocker 5" required />
+                    <input className="text-center bg-floral-white w-full outline-none" type="text" id="blocker5" name="blocker5" value={formData.blocker5} onChange={handleInputChange} placeholder="blocker 5" required />
                 </form>
                 <input
                     type="submit"
