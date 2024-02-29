@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
+
+:root {
+    --federal-blue: #1A0B56;
+    --goldenrod: #DBA335;
+    --avocado: #578B24;
+    --pantone-orange: #F06420;
+    --floral-white: #FFF8EC;
+}
+
+.federal-blue {
+    color: var(--federal-blue);
+}
+
+.goldenrod {
+    color: var(--goldenrod);
+}
+
+.avocado {
+    color: var(--avocado);
+}
+
+.pantone-orange {
+    color: var(--pantone-orange);
+}
+
+.bg-federal-blue {
+    background-color: var(--federal-blue);
+    color: var(--floral-white);
+}
+
+.bg-goldenrod {
+    background-color: var(--goldenrod);
+    color: var(--floral-white);
+}
+
+.bg-avocado {
+    background-color: var(--avocado);
+    color: var(--floral-white);
+}
+
+.bg-pantone-orange {
+    background-color: var(--pantone-orange);
+    color: var(--floral-white);
+}
+
+.bg-floral-white {
+    background-color: var(--floral-white);
+}
