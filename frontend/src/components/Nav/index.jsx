@@ -23,7 +23,7 @@ function Nav({ loginStatus, setLoginStatus }) {
     }
 
     return (
-        <nav>
+        <nav className="bg-gray-400 flex flex-row justify-between">
             <Link to="/">Home</Link>
             <Link to="/about">About</Link>
             {loggedInLinks}
