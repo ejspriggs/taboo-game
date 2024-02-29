@@ -11,7 +11,7 @@ import SignIn from "../SignIn";
 import CardCreateEdit from "../CardCreateEdit";
 
 export default function App() {
-    const [loginStatus, setLoginStatus] = useState(false);
+    const [loginStatus, setLoginStatus] = useState(localStorage.getItem("userToken") != null);
 
     return (
         <>

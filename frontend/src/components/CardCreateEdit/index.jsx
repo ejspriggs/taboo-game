@@ -13,6 +13,7 @@ function CardCreateEdit({ edit, loginStatus }) {
         blocker5: "",
         bgColor: "federal-blue"
     });
+    const [loaded, setLoaded] = useState(false);
 
     const navigate = useNavigate();
     const params = useParams();
@@ -30,15 +31,16 @@ function CardCreateEdit({ edit, loginStatus }) {
                         blocker3: existingCard.blockers[2],
                         blocker4: existingCard.blockers[3],
                         blocker5: existingCard.blockers[4],
-                        bgColor: "federal-blue"
+                        bgColor: existingCard.bgColor
                     });
+                    setLoaded(true);
                 });
             }
         }
-        
-    }, [loginStatus, navigate]);
+    }, [loginStatus, edit, params.cardId, navigate]);
 
     function handleInputChange(event) {
+        console.log(event.target.name + " " + event.target.value);
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 
@@ -55,8 +57,21 @@ function CardCreateEdit({ edit, loginStatus }) {
         }
     }
 
-    return (
-        <form onSubmit={handleSubmit}>
+    let result = <p>Loading form...</p>;
+    if (edit === false || loaded === true) {
+        result =
+            <form onSubmit={handleSubmit}>
+            <fieldset>
+                <legend>Select color:</legend>
+                <input type="radio" id="bgColor" name="bgColor" value="federal-blue" checked={formData.bgColor === "federal-blue"} onChange={handleInputChange}/>
+                <label htmlFor="bgColor">Federal Blue</label>
+                <input type="radio" id="bgColor" name="bgColor" value="goldenrod" checked={formData.bgColor === "goldenrod"} onChange={handleInputChange}/>
+                <label htmlFor="bgColor">Goldenrod</label>
+                <input type="radio" id="bgColor" name="bgColor" value="avocado" checked={formData.bgColor === "avocado"} onChange={handleInputChange}/>
+                <label htmlFor="bgColor">Avocado</label>
+                <input type="radio" id="bgColor" name="bgColor" value="pantone-orange" checked={formData.bgColor === "pantone-orange"} onChange={handleInputChange}/>
+                <label htmlFor="bgColor">Pantone Orange</label>
+            </fieldset>
             <p>
                 <label htmlFor="target">Target</label>
                 <input type="text" id="target" name="target" value={formData.target} onChange={handleInputChange} placeholder="target" required />
@@ -84,8 +99,10 @@ function CardCreateEdit({ edit, loginStatus }) {
             <p>
                 <button type="submit">Save</button>
             </p>
-        </form>
-    );
+        </form>;
+    }
+
+    return result;
 }
 
 CardCreateEdit.propTypes = {
