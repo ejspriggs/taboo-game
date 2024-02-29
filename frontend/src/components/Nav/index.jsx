@@ -19,7 +19,7 @@ function Nav({ loginStatus, setLoginStatus }) {
                 localStorage.removeItem("userToken");
                 setLoginStatus(false);
             }}>
-            Log Out
+            Sign Out
         </button>;
     }
 
