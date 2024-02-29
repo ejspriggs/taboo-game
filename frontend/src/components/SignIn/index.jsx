@@ -21,33 +21,42 @@ function SignIn({ setLoginStatus }) {
         navigate("/");
     }
 
-    return(
+    return (
         <>
-            <h1>Sign In</h1>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="email">email</label>
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="email address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                />
-                <label htmlFor="password">password</label>
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    minLength="6"
-                    required
-                    placeholder="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                />
-                <button type="submit">Sign In</button>
-            </form>
+            <p className="text-4xl text-center py-4">Sign In</p>
+            <div className="text-center">
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="email">E-mail Address:&nbsp;</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="username@host.tld"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                    <br />
+                    <label htmlFor="password">Password:&nbsp;</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        minLength="6"
+                        required
+                        placeholder="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                    />
+                    <br />
+                    <button
+                        className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5"
+                        type="submit"
+                    >
+                        Sign In
+                    </button>
+                </form>
+            </div>
         </>
     );
 }
