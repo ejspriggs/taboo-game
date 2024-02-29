@@ -9,7 +9,6 @@ router.post("/signup", (req, res) => {
         const token = jwt.encode({ id: user.id }, config.jwtSecret);
         res.json({ token: token });
     }).catch( (error) => {
-        console.log(req.body);
         res.status(401).json({ message: `Signup error: ${error.message}` });
     });
 });

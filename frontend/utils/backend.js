@@ -34,3 +34,9 @@ export async function editCard(cardId, cardInfo) {
     const { data } = await axios.put(`/api/cards/${cardId}`, cardInfo, authHeader);
     return data;
 }
+
+export async function deleteCard(cardId) {
+    const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
+    const { data } = await axios.delete(`/api/cards/${cardId}`, authHeader);
+    return data;
+}

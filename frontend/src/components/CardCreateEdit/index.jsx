@@ -40,7 +40,6 @@ function CardCreateEdit({ edit, loginStatus }) {
     }, [loginStatus, edit, params.cardId, navigate]);
 
     function handleInputChange(event) {
-        console.log(event.target.name + " " + event.target.value);
         setFormData({ ...formData, [event.target.name]: event.target.value });
     }
 

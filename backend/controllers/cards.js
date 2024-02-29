@@ -8,20 +8,16 @@ const models = require("../models");
     const cardModel = models.Card;
 
 const authMiddleware = (req, res, next) => {
-    console.log(req.headers);
     const token = req.headers.authorization;
     if (token) {
-        console.log(token);
         try {
             const decodedToken = jwt.decode(token, jwtConfig.jwtSecret);
             req.user = decodedToken;
             next();
         } catch (err) {
-            console.log("invalid token");
             res.status(401).json({ message: "Invalid token" });
         }
     } else {
-        console.log("missing or invalid header");
         res.status(401).json({ message: "Missing or invalid authorization header" });
     }
 };
@@ -48,7 +44,6 @@ router.post("/", authMiddleware, (req, res) => {
 });
 
 router.get("/:cardId", authMiddleware, (req, res) => {
-    console.log("getting card: " + req.params.cardId);
     cardModel.findById(req.params.cardId).then( card => {
         res.json(card);
     });
