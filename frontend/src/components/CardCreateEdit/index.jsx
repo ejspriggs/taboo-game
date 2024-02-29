@@ -9,7 +9,8 @@ function CardCreateEdit({ loginStatus }) {
         blocker2: "",
         blocker3: "",
         blocker4: "",
-        blocker5: ""
+        blocker5: "",
+        bgColor: "federal-blue"
     });
 
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ function CardCreateEdit({ loginStatus }) {
         if (!loginStatus) {
             navigate("/signin");
         }
-    }, [loginStatus]);
+    }, [loginStatus, navigate]);
 
     function handleInputChange(event) {
         setFormData({ ...formData, [event.target.name]: event.target.value });

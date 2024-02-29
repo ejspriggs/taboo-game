@@ -44,8 +44,8 @@ if (process.env.ON_HEROKU === "false") {
 
 // Mount controllers
 
-const usersCtrl = require('./controllers/users');
-app.use('/api/users', usersCtrl);
+app.use('/api/users', usersController);
+app.use('/api/cards', cardsController);
 
 // Non-REST routes
 
