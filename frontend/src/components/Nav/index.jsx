@@ -2,28 +2,31 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 function Nav({ loginStatus, setLoginStatus }) {
-    let cardsLink = <></>;
+    let loggedInLinks = <></>;
     let authLinks = <>
         <Link to="/signup">Sign Up</Link>
         <Link to="/signin">Sign In</Link>
     </>;
 
     if (loginStatus) {
-        cardsLink = <>
+        loggedInLinks = <>
                 <Link to="/cards">Cards</Link>
+                <Link to="/games">Games</Link>
             </>;
         authLinks = <button
             onClick={ () => {
                 localStorage.removeItem("userToken");
                 setLoginStatus(false);
-            }}>Log Out</button>;
+            }}>
+            Log Out
+        </button>;
     }
 
     return (
         <nav>
             <Link to="/">Home</Link>
             <Link to="/about">About</Link>
-            {cardsLink}
+            {loggedInLinks}
             {authLinks}
         </nav>
     );
