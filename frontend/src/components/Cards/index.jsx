@@ -58,9 +58,9 @@ export default function Cards({ loginStatus }) {
 
     return (
         <>
-            <p className="text-4xl text-center py-4">Cards!</p>
+            <p className="text-4xl text-center py-4">Cards</p>
             <div className="text-center py-4">
-                <Link className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5" to="/cards/new">Add New</Link>
+                <Link className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5" to="/cards/new">Add New</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
                 {cardList}
