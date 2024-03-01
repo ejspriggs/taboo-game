@@ -24,9 +24,6 @@ const models = require("./models/index");
 // Usual express.js setup
 
 const app = express();
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,6 +43,7 @@ if (process.env.ON_HEROKU === "false") {
 
 app.use('/api/users', usersController);
 app.use('/api/cards', cardsController);
+app.use('/api/games', gamesController);
 
 // Non-REST routes
 

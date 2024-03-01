@@ -10,5 +10,6 @@ db.on('connected', function () {
 
 module.exports = {
     User: require('./user'),
-    Card: require('./card')
+    Card: require('./card'),
+    Game: require('./game')
 }

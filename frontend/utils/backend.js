@@ -79,7 +79,7 @@ export async function joinGame(gameToken, playerName) {
     // Returned object attributes:
     //     playerToken: string
     const { data } = await axios.post(
-        `/api/games/${gameToken}/${playerName}`,
+        `/api/games/${gameToken}`,
         { playerName: playerName }
     );
     return data;
@@ -92,7 +92,7 @@ export async function pollGame(gameToken, playerToken) {
     //     currentTurn: number
     //     players: array of strings
     //     cardholder: a player name, or the empty string
-    //     cardLeft: number
+    //     cardsLeft: number
     const { data } = await axios.get(`/api/games/${gameToken}/${playerToken}`);
     return data;
 }

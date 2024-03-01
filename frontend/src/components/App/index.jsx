@@ -25,7 +25,7 @@ export default function App() {
                 <Route path="/cards/new" element={<CardCreateEdit edit={false} loginStatus={loginStatus} />} />
                 <Route path="/cards/edit/:cardId" element={<CardCreateEdit edit={true} loginStatus={loginStatus} />} />
                 <Route path="/games" element={<Games loginStatus={loginStatus} />} />
-                <Route path="/games/play/:gameId" element={<PlayGame />} />
+                <Route path="/play/:gameToken" element={<PlayGame />} />
                 <Route path="/signup" element={<SignUp setLoginStatus={setLoginStatus} />} />
                 <Route path="/signin" element={<SignIn setLoginStatus={setLoginStatus} />} />
             </Routes>

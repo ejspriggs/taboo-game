@@ -40,7 +40,9 @@ router.post("/", authMiddleware, (req, res) => {
         ],
         bgColor: req.body.bgColor,
         author: req.user.id
-    }).then( result => res.json(result) );
+    }).then( result => {
+        res.json(result);
+    });
 });
 
 router.get("/:cardId", authMiddleware, (req, res) => {

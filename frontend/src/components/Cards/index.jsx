@@ -1,17 +1,19 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import { getCards, deleteCard } from "../../../utils/backend";
 
-export default function Cards({ loginStatus }) {
-    const [cards, setCards] = useState(false);
+function Cards({ loginStatus }) {
+    const [cards, setCards] = useState({ loaded: false });
 
     const navigate = useNavigate();
 
     function handleDelete(cardId) {
-        deleteCard(cardId);
-        getCards().then( (result) => {
-            setCards(result);
+        deleteCard(cardId).then( () => {
+            getCards().then( (result) => {
+                setCards({ data: result, loaded: true });
+            });
         });
     }
 
@@ -20,17 +22,17 @@ export default function Cards({ loginStatus }) {
             navigate("/signin");
         }
         getCards().then( (result) => {
-            setCards(result);
+            setCards({ data: result, loaded: true });
         });
     }, [loginStatus, navigate]);
 
     let cardList;
-    if (cards === false) {
+    if (cards.loaded === false) {
         cardList = <p>Loading cards...</p>;
-    } else if (cards.length === 0) {
+    } else if (cards.data.length === 0) {
         cardList = <p>No cards to display.</p>;
     } else {
-        cardList = cards.map( (card) => (
+        cardList = cards.data.map( (card) => (
             <div
                 key={card._id}
                 className="bg-floral-white px-4 py-4 mx-4 my-4 rounded-xl border-2"
@@ -72,3 +74,5 @@ export default function Cards({ loginStatus }) {
 Cards.propTypes = {
     loginStatus: PropTypes.bool.isRequired
 }
+
+export default Cards;
