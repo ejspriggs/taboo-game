@@ -97,7 +97,7 @@ export async function pollGame(gameToken, playerToken) {
     return data;
 }
 
-export async function drawCard(gameToken, playerToken, turnNumber) {
+export async function drawCard(gameToken, playerToken, currentTurn) {
     // Draw a card in a game whose token you know, if:
     // 1) you have a player token for that game
     // 2) you are correct about the current turn number
@@ -110,23 +110,17 @@ export async function drawCard(gameToken, playerToken, turnNumber) {
     //     target: string
     //     blockers: array of string
     //     bgColor: string
-    const { data } = await axios.post(
-        `/api/games/${gameToken}/${playerToken}/draw`,
-        { turnNumber: turnNumber }
-    );
+    const { data } = await axios.post(`/api/games/${gameToken}/${playerToken}/${currentTurn}`, {});
     return data;
 }
 
-export async function discardCard(gameToken, playerToken, turnNumber) {
+export async function discardCard(gameToken, playerToken, currentTurn) {
     // Discard the card you are holding in a game whose token you know, if:
     // 1) you have a player token for that game
     // 2) you are correct about the current turn number
     // 3) the player whose token was given is the cardholder in that game
     // Returns success, or an error.  If successful, clears the card-holder
     // for the game whose token was given, and increments the turn number.
-    const { data } = await axios.post(
-        `/api/games/${gameToken}/${playerToken}/discard`,
-        { turnNumber: turnNumber }
-    );
+    const { data } = await axios.delete(`/api/games/${gameToken}/${playerToken}/${currentTurn}`, {});
     return data;
 }

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { joinGame, pollGame } from '../../../utils/backend';
+import { discardCard, drawCard, joinGame, pollGame } from '../../../utils/backend';
 
 function PlayGame() {
     const [playerToken, setPlayerToken] = useState({ loaded: false });
     const [name, setName] = useState("");
     const [gameState, setGameState] = useState({ loaded: false });
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
+    const [heldCard, setHeldCard] = useState({ loaded: false });
 
     const params = useParams();
 
@@ -17,7 +18,7 @@ function PlayGame() {
     function handleSubmit(event) {
         event.preventDefault();
         joinGame(params.gameToken, name).then( ({ playerToken }) => {
-            localStorage.setItem("playerToken", playerToken);
+            localStorage.setItem(`ptoken-${params.gameToken}`, playerToken);
             setPlayerToken({ data: playerToken, loaded: true });
         });
     }
@@ -25,7 +26,8 @@ function PlayGame() {
     function loadGameState() {
         if (playerToken.loaded) {
             pollGame(params.gameToken, playerToken.data).then( polledState => {
-                setGameState({ data: polledState, loaded: true });
+                setGameState({ data: { ...polledState, cardholder: polledState.cardholder ? polledState.cardholder : "" }, loaded: true });
+                setName(polledState.players.find( player => player.playerToken === playerToken ).name);
             });
         }
     }
@@ -58,9 +60,9 @@ function PlayGame() {
     }, []);
 
     if (playerToken.loaded === false) {
-        if (localStorage.getItem("playerToken")) {
+        if (localStorage.getItem(`ptoken-${params.gameToken}`)) {
             // In this case, the user has been to the link before and already joined, so set the token in React.
-            setPlayerToken({ data: localStorage.getItem("playerToken"), loaded: true });
+            setPlayerToken({ data: localStorage.getItem(`ptoken-${params.gameToken}`), loaded: true });
         } else {
             // In this case, there's no local storage, and we haven't gotten the results of joining yet,
             // so send the form that lets the user join.
@@ -77,11 +79,69 @@ function PlayGame() {
 
     // If we reach this position, we have a token and we have game data, so
     // display the game data we have.
+    function handleDrawCard() {
+        drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( (card) => {
+            setHeldCard({ data: card, loaded: true });
+        });
+    }
+
+    function handleDiscard() {
+        discardCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( () => {
+            setHeldCard({ loaded: false });
+        });
+    }
+
+    const drawCardButton = (
+        <button
+            onClick={() => handleDrawCard()}
+            disabled={gameState.loaded && gameState.data.cardholder}
+            type="button"
+        >
+            Draw
+        </button>
+    );
+
+    const discardButton = (
+        <button
+            onClick={() => handleDiscard()}
+            disabled={gameState.loaded && gameState.data.cardholder !== name}
+            type="button"
+        >
+            Discard
+        </button>
+    );
+
+    let cardMessage;
+    if (heldCard.loaded) {
+        cardMessage = (
+            <>
+                <p>Target: {heldCard.data.target}</p>
+                <p>Blockers: {heldCard.data.blockers.join(", ")}</p>
+            </>
+        );
+    } else {
+        cardMessage = <p>No card held.</p>;
+    }
+
     return (
         <>
-            <h1>This is the PlayGame component.</h1>
             <p>gameToken: {params.gameToken}</p>
             <p>playerToken: {playerToken.data}</p>
+            <p>your name: {name}</p>
+            <p>Player names: {gameState.data.players.map( player => {
+                let result = player.name;
+                if (player.owner) {
+                    result = result + " (Owner)";
+                }
+                if (playerToken.data === player.playerToken) {
+                    result = result + " (You)";
+                }
+                return result;
+            }).join(", ")
+            }</p>
+            <p>{gameState.data.cardholder.length > 0 ? `${gameState.data.cardholder} is holding a card.` : "No one is holding a card."}</p>
+            {cardMessage}
+            <p>{drawCardButton}{discardButton}</p>
             <p>gameState.data: {JSON.stringify(gameState.data)}</p>
         </>
     );

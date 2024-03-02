@@ -6,7 +6,7 @@ const gameSchema = new mongoose.Schema({
         playerToken: { type: String, required: true },
         owner: { type: Boolean, required: true }
     }],
-    cardholder: { type: String, required: true },
+    cardholder: { type: String },
     currentTurn: { type: Number, required: true },
     deck: [{
         type: mongoose.Schema.Types.ObjectId,
