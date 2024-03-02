@@ -54,13 +54,13 @@ function Games({ loginStatus }) {
     return (
         <>
             <p className="text-4xl text-center py-4">Games</p>
-            <div className="flex flex-row p-2 m-2 rounded-lg border-2 border-black bg-floral-white">
+            <div className="flex flex-row p-2 m-2 rounded-lg border-2 border-black bg-floral-white justify-between w-4/5 lg:w-2/5 mx-auto">
                 <form
                     id="myform"
                     onSubmit={handleSubmit}
                     className="flex flex-col"
                 >
-                    <label htmlFor="ownerName">Owner Name:</label>
+                    <label htmlFor="ownerName">Name:</label>
                     <input
                         type="text"
                         id="ownerName"
@@ -69,7 +69,7 @@ function Games({ loginStatus }) {
                         onChange={handleInputChange}
                         placeholder="owner name"
                         required
-                        className="border-2 border-black mr-4"
+                        className="border-2 border-black pl-1 mr-4"
                     />
                 </form>
                 <input
