@@ -56,8 +56,24 @@ function Games({ loginStatus }) {
                 <p>Deck left: {game.deck.length}</p>
                 {game.cardholder ? <p>Cardholder: {game.cardholder}</p> : <></>}
                 <p>Join link: <span id={`joinlink-${game.gameToken}`}>{window.location.origin}/play/{game.gameToken}</span></p>
-                <button type="button" onClick={() => copyLink(`joinlink-${game.gameToken}`)}>Copy Join Link</button>
-                <button type="button" onClick={() => playGame(game.gameToken)}>Play Game</button>
+                <button
+                    type="button"
+                    className="text-white bg-green-500 hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                    onClick={
+                        () => copyLink(`joinlink-${game.gameToken}`)
+                    }
+                >
+                    Copy Join Link
+                </button>
+                <button
+                    type="button"
+                    className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                    onClick={
+                        () => playGame(game.gameToken)
+                    }
+                >
+                    Play Game
+                </button>
             </div>
         ));
     }
