@@ -6,7 +6,7 @@ import { getGames, addGame } from "../../../utils/backend";
 
 function Games({ loginStatus }) {
     const [games, setGames] = useState({ loaded: false });
-    const [ownerName, setOwnerName] = useState("Edward");
+    const [ownerName, setOwnerName] = useState("");
 
     const navigate = useNavigate();
 
@@ -41,32 +41,44 @@ function Games({ loginStatus }) {
     } else if (games.data.length === 0) {
         gameList = <p>No games to display.</p>;
     } else {
-        gameList = <p>{JSON.stringify(games.data)}</p>;
+        gameList = games.data.map( game => (
+            <div key={game.gameToken} className="p-2 m-2 rounded-lg border-2 border-black">
+                <p>Owner: {game.players.find( player => player.owner ).name}</p>
+                <p>Players: {game.players.length}</p>
+                <p>Deck left: {game.deck.length}</p>
+                {game.cardholder ? <p>Cardholder: {game.cardholder}</p> : <></>}
+            </div>
+        ));
     }
 
     return (
         <>
             <p className="text-4xl text-center py-4">Games</p>
-            <form
-                id="myform"
-                onSubmit={handleSubmit}
-            >
+            <div className="flex flex-row p-2 m-2 rounded-lg border-2 border-black bg-floral-white">
+                <form
+                    id="myform"
+                    onSubmit={handleSubmit}
+                    className="flex flex-col"
+                >
+                    <label htmlFor="ownerName">Owner Name:</label>
+                    <input
+                        type="text"
+                        id="ownerName"
+                        name="ownerName"
+                        value={ownerName}
+                        onChange={handleInputChange}
+                        placeholder="owner name"
+                        required
+                        className="border-2 border-black mr-4"
+                    />
+                </form>
                 <input
-                    type="text"
-                    id="ownerName"
-                    name="ownerName"
-                    value={ownerName}
-                    onChange={handleInputChange}
-                    placeholder="your name"
-                    required
+                    type="submit"
+                    form="myform"
+                    className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5"
+                    value="Add Game"
                 />
-            </form>
-            <input
-                type="submit"
-                form="myform"
-                className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5"
-                value="Add Game"
-            />
+            </div>
             {gameList}
         </>
     );
