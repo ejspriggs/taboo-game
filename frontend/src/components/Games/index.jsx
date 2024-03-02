@@ -35,6 +35,14 @@ function Games({ loginStatus }) {
         }
     }, [loginStatus, navigate, games.loaded]);
 
+    async function copyLink(spanId) {
+        await navigator.clipboard.writeText(document.getElementById(spanId).innerText);
+    }
+
+    function playGame(gameToken) {
+        navigate(`/play/${gameToken}`);
+    }
+
     let gameList;
     if (games.loaded === false) {
         gameList = <p>Loading games...</p>;
@@ -47,6 +55,9 @@ function Games({ loginStatus }) {
                 <p>Players: {game.players.length}</p>
                 <p>Deck left: {game.deck.length}</p>
                 {game.cardholder ? <p>Cardholder: {game.cardholder}</p> : <></>}
+                <p>Join link: <span id={`joinlink-${game.gameToken}`}>{window.location.origin}/play/{game.gameToken}</span></p>
+                <button type="button" onClick={() => copyLink(`joinlink-${game.gameToken}`)}>Copy Join Link</button>
+                <button type="button" onClick={() => playGame(game.gameToken)}>Play Game</button>
             </div>
         ));
     }
