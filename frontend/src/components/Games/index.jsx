@@ -12,10 +12,8 @@ function Games({ loginStatus }) {
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log("in handleSubmit");
         addGame(ownerName).then( result => {
-            console.log("in addGame().then()");
-            localStorage.setItem("playerToken", result.playerToken);
+            localStorage.setItem(`ptoken-${result.gameToken}`, result.playerToken);
             navigate(`/play/${result.gameToken}`);
         });
     }
