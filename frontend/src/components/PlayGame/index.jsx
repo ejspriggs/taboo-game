@@ -82,12 +82,16 @@ function PlayGame() {
     function handleDrawCard() {
         drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( (card) => {
             setHeldCard({ data: card, loaded: true });
+        }).catch( () => {
+            console.log("Draw failed, try again.");
         });
     }
 
     function handleDiscard() {
         discardCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( () => {
             setHeldCard({ loaded: false });
+        }).catch( () => {
+            console.log("Discard failed, try again.");
         });
     }
 
