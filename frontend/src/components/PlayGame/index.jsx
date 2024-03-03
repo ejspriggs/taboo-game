@@ -27,7 +27,12 @@ function PlayGame() {
         if (playerToken.loaded) {
             pollGame(params.gameToken, playerToken.data).then( polledState => {
                 setGameState({ data: { ...polledState, cardholder: polledState.cardholder ? polledState.cardholder : "" }, loaded: true });
-                setName(polledState.players.find( player => player.playerToken === playerToken ).name);
+                for (let player of polledState.players) {
+                    if (player.playerToken === playerToken.data ) {
+                        setName(player.name);
+                        break;
+                    }
+                }
             });
         }
     }
