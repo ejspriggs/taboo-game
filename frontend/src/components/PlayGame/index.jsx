@@ -9,6 +9,7 @@ function PlayGame() {
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
     const [heldCard, setHeldCard] = useState({ loaded: false });
     const [gameOwner, setGameOwner] = useState(false);
+    const [timesNotInList, setTimesNotInList] = useState(0);
 
     const params = useParams();
 
@@ -27,12 +28,27 @@ function PlayGame() {
     function loadGameState() {
         if (playerToken.loaded) {
             pollGame(params.gameToken, playerToken.data).then( polledState => {
-                setGameState({ data: { ...polledState, cardholder: polledState.cardholder ? polledState.cardholder : "" }, loaded: true });
+                setGameState({ data: polledState, loaded: true });
+                let playerInList = false;
                 for (let player of polledState.players) {
                     if (player.playerToken === playerToken.data ) {
                         setName(player.name);
                         setGameOwner(player.owner);
+                        playerInList = true;
                         break;
+                    }
+                }
+                if (!playerInList) {
+                    if (timesNotInList > 2) {
+                        localStorage.removeItem(`ptoken-${params.gameToken}`);
+                        setPlayerToken({ loaded: false });
+                        setGameState({ loaded: false });
+                        setHeldCard({ loaded: false });
+                        setGameOwner(false);
+                        setTimesNotInList(0);
+                        location.reload();
+                    } else {
+                        setTimesNotInList(timesNotInList + 1);
                     }
                 }
             });
@@ -115,6 +131,7 @@ function PlayGame() {
     const drawCardButton = (
         <button
             onClick={() => handleDrawCard()}
+            className=""
             disabled={gameState.loaded && gameState.data.cardholder}
             type="button"
         >
