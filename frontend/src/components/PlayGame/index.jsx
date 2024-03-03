@@ -8,6 +8,7 @@ function PlayGame() {
     const [gameState, setGameState] = useState({ loaded: false });
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
     const [heldCard, setHeldCard] = useState({ loaded: false });
+    const [gameOwner, setGameOwner] = useState(false);
 
     const params = useParams();
 
@@ -30,6 +31,7 @@ function PlayGame() {
                 for (let player of polledState.players) {
                     if (player.playerToken === playerToken.data ) {
                         setName(player.name);
+                        setGameOwner(player.owner);
                         break;
                     }
                 }
@@ -132,6 +134,19 @@ function PlayGame() {
         cardMessage = <p>No card held.</p>;
     }
 
+    let manageUsers;
+    if (gameOwner) {
+        manageUsers = (
+            <>
+                {gameState.data.players.map( player => (
+                    <p key={player.name}>{player.name}</p>
+                ))}
+            </>
+        );
+    } else {
+        manageUsers = <p>Not game owner, so no user management.</p>;
+    }
+
     return (
         <>
             <p>gameToken: {params.gameToken}</p>
@@ -151,7 +166,8 @@ function PlayGame() {
             <p>{gameState.data.cardholder.length > 0 ? `${gameState.data.cardholder} is holding a card.` : "No one is holding a card."}</p>
             {cardMessage}
             <p>{drawCardButton}{discardButton}</p>
-            <p>gameState.data: {JSON.stringify(gameState.data)}</p>
+            {manageUsers}
+            {/* <p>gameState.data: {JSON.stringify(gameState.data)}</p> */}
         </>
     );
 }
