@@ -88,6 +88,16 @@ export async function takeOverGame(gameToken) {
     return data;
 }
 
+export async function kickPlayer(gameToken, playerName) {
+    // Kick the player whose index in the player list is given, if the logged-in user is the owner of the game.
+    const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
+    const { data } = await axios.delete(
+        `/api/games/${gameToken}/players/${playerName}`,
+        authHeader
+    );
+    return data;
+}
+
 export async function joinGame(gameToken, playerName) {
     // Join a game whose token you know, and get a player token for that game.
     // Body:

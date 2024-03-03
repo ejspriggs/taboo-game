@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { discardCard, drawCard, joinGame, pollGame } from '../../../utils/backend';
+import { discardCard, drawCard, joinGame, kickPlayer, pollGame } from '../../../utils/backend';
 
 function PlayGame() {
     const [playerToken, setPlayerToken] = useState({ loaded: false });
@@ -89,6 +89,7 @@ function PlayGame() {
     function handleDrawCard() {
         drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( (card) => {
             setHeldCard({ data: card, loaded: true });
+            loadGameState();
         }).catch( () => {
             console.log("Draw failed, try again.");
         });
@@ -97,8 +98,17 @@ function PlayGame() {
     function handleDiscard() {
         discardCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( () => {
             setHeldCard({ loaded: false });
+            loadGameState();
         }).catch( () => {
             console.log("Discard failed, try again.");
+        });
+    }
+
+    function handleKickPlayer(playerName) {
+        kickPlayer(gameState.data.gameToken, playerName).then( () => {
+            loadGameState();
+        }).catch( () => {
+            console.log("Kick failed, try again.");
         });
     }
 
@@ -139,7 +149,17 @@ function PlayGame() {
         manageUsers = (
             <>
                 {gameState.data.players.map( player => (
-                    <p key={player.name}>{player.name}</p>
+                    <div
+                        key={player.name}
+                    >
+                        <p>{player.name}</p>
+                        <button
+                            type="button"
+                            onClick={() => handleKickPlayer(player.name)}
+                        >
+                            Kick
+                        </button>
+                    </div>
                 ))}
             </>
         );
@@ -167,7 +187,6 @@ function PlayGame() {
             {cardMessage}
             <p>{drawCardButton}{discardButton}</p>
             {manageUsers}
-            {/* <p>gameState.data: {JSON.stringify(gameState.data)}</p> */}
         </>
     );
 }

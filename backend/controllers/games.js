@@ -99,6 +99,17 @@ router.get("/:gameToken/superuser", authMiddleware, (req, res) => {
     });
 });
 
+router.delete("/:gameToken/players/:playerName", authMiddleware, (req, res) => {
+    gameModel.findOneAndUpdate(
+        { gameToken: req.params.gameToken },
+        { $pull: { players: { name: req.params.playerName } } }
+    ).then( () => {
+        res.json({ message: "success" });
+    }).catch( () => {
+        res.status(404).send("Couldn't find game");
+    });
+});
+
 router.post("/:gameToken", (req, res) => {
     gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
         if (game === null) {
