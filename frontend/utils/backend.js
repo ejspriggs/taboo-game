@@ -42,11 +42,7 @@ export async function deleteCard(cardId) {
 }
 
 export async function getGames() {
-    // Get a list of games owned by the requesting authorized user.
-    // Each list item has the following attributes:
-    //     players: number
-    //     gameToken: random string authorizing guests to join the game
-    //     cardsLeft: number
+    // Get a list of games, if logged in.
     const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
     const { data } = await axios.get(
         '/api/games',
@@ -55,7 +51,7 @@ export async function getGames() {
     return data;
 }
 
-export async function addGame(ownerName) {
+export async function addGame(ownerName, creatorEmail) {
     // Create a game with one player, and return the game token and the
     // player token, for an authorized user.
     // Body:
@@ -66,7 +62,27 @@ export async function addGame(ownerName) {
     const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
     const { data } = await axios.post(
         '/api/games',
-        { ownerName: ownerName },
+        { ownerName: ownerName, creatorEmail: creatorEmail },
+        authHeader
+    );
+    return data;
+}
+
+export async function deleteGame(gameToken) {
+    // Delete the game with the given token, if it is owned by the logged-in user.
+    const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
+    const { data } = await axios.delete(
+        `/api/games/${gameToken}`,
+        authHeader
+    );
+    return data;
+}
+
+export async function takeOverGame(gameToken) {
+    // Return the token for the given game's superuser, if the logged-in user is the owner of the game.
+    const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
+    const { data } = await axios.get(
+        `/api/games/${gameToken}/superuser`,
         authHeader
     );
     return data;

@@ -10,6 +10,15 @@ const { findById } = require("../models/user");
     const cardModel = models.Card;
     const gameModel = models.Game;
 
+function generateToken(length) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let ret = "";
+    for (let i = 0; i < length; i++) {
+        ret = ret + chars[Math.floor(Math.random() * chars.length)];
+    }
+    return ret;
+}
+    
 const authMiddleware = (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
@@ -31,20 +40,11 @@ router.get("/", authMiddleware, (req, res) => {
     });
 });
 
-function generateToken(length) {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let ret = "";
-    for (let i = 0; i < length; i++) {
-        ret = ret + chars[Math.floor(Math.random() * chars.length)];
-    }
-    return ret;
-}
-
 router.post("/", authMiddleware, (req, res) => {
     cardModel.find({}).then( (allCards) => {
         // TODO: Shuffle.
         const allCardIds = allCards.map( Card => Card._id );
-        let gameToken = generateToken(16);
+        let gameToken = generateToken(23); // GUID-ish, ~131 bits
         let playerToken = generateToken(8);
         const newGame = {
             players: [{
@@ -55,12 +55,47 @@ router.post("/", authMiddleware, (req, res) => {
             cardholder: "",
             currentTurn: 0,
             deck: allCardIds,
-            gameToken: gameToken
+            gameToken: gameToken,
+            creator: req.user.id,
+            creatorEmail: req.body.creatorEmail
         };
-        console.log(newGame);
         gameModel.create(newGame).then( () => {
             res.json({ gameToken: gameToken, playerToken: playerToken });
         });
+    });
+});
+
+router.delete("/:gameToken", authMiddleware, (req, res) => {
+    gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
+        if (game === null) {
+            res.status(404).send(`game token "${req.params.gameToken}" not found`);
+        } else {
+            if (game.creator == req.user.id) {
+                gameModel.deleteOne({ gameToken: req.params.gameToken }).then( () => {
+                    res.json({ message: "success" });
+                }).catch( () => {
+                    res.status(500).send("Unable to delete.");
+                })
+            } else {
+                res.status(401).send("This game isn't yours!");
+            }
+        }
+    });
+});
+
+router.get("/:gameToken/superuser", authMiddleware, (req, res) => {
+    gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
+        if (game === null) {
+            res.status(404).send(`game token "${req.params.gameToken}" not found`);
+        } else {
+            if (game.creator == req.user.id) {
+                // Return the superuser playerToken to be set in localStorage
+                const foundPlayer = game.players.find( player => player.owner );
+                res.json({ playerToken: foundPlayer.playerToken });
+            } else {
+                res.status(401).send("This game isn't yours!");
+            }
+        }
     });
 });
 
@@ -70,7 +105,7 @@ router.post("/:gameToken", (req, res) => {
             // Game doesn't exist, hence it can't be joined.
             res.status(404).send(`game token "${req.params.gameToken}" not found`);
         } else {
-            let foundPlayer = game.players.find( player => player.name === req.body.playerName );
+            const foundPlayer = game.players.find( player => player.name === req.body.playerName );
             if (foundPlayer) {
                 // Name already in use, reject.
                 res.status(401).send(`name "${req.body.playerName}" is already in use in game with token "${req.params.gameToken}"`);

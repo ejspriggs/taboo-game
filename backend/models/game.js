@@ -13,7 +13,13 @@ const gameSchema = new mongoose.Schema({
         required: true,
         ref: 'Card'
     }],
-    gameToken: { type: String, required: true }
+    gameToken: { type: String, required: true },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+    creatorEmail: { type: String, required: true }
 });
 
 module.exports = mongoose.model("Game", gameSchema);

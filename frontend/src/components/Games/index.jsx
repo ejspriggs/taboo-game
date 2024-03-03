@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getGames, addGame } from "../../../utils/backend";
+import { getGames, addGame, deleteGame, takeOverGame } from "../../../utils/backend";
 
 function Games({ loginStatus }) {
     const [games, setGames] = useState({ loaded: false });
@@ -12,9 +12,14 @@ function Games({ loginStatus }) {
 
     function handleSubmit(event) {
         event.preventDefault();
-        addGame(ownerName).then( result => {
+        addGame(ownerName, localStorage.getItem("email")).then( result => {
             localStorage.setItem(`ptoken-${result.gameToken}`, result.playerToken);
-            navigate(`/play/${result.gameToken}`);
+            // navigate(`/play/${result.gameToken}`);
+            getGames().then( (result) => {
+                setGames({ data: result, loaded: true });
+            }).catch( (error) => {
+                setGames({ data: error.toJSON(), loaded: true });
+            });
         });
     }
 
@@ -35,6 +40,22 @@ function Games({ loginStatus }) {
         }
     }, [loginStatus, navigate, games.loaded]);
 
+    function handleDeleteGame(gameToken) {
+        deleteGame(gameToken).then( () => {
+            getGames().then( (result) => {
+                setGames({ data: result, loaded: true });
+            }).catch( (error) => {
+                setGames({ data: error.toJSON(), loaded: true });
+            });
+        })
+    }
+
+    function handleTakeOver(gameToken) {
+        takeOverGame(gameToken).then( ({ playerToken }) => {
+            localStorage.setItem(`ptoken-${gameToken}`, playerToken);
+        });
+    }
+
     async function copyLink(spanId) {
         await navigator.clipboard.writeText(document.getElementById(spanId).innerText);
     }
@@ -49,33 +70,52 @@ function Games({ loginStatus }) {
     } else if (games.data.length === 0) {
         gameList = <p>No games to display.</p>;
     } else {
-        gameList = games.data.map( game => (
-            <div key={game.gameToken} className="p-2 m-2 rounded-lg border-2 border-black bg-floral-white">
-                <p>Owner: {game.players.find( player => player.owner ).name}</p>
-                <p>Players: {game.players.length}</p>
-                <p>Deck left: {game.deck.length}</p>
-                {game.cardholder ? <p>Cardholder: {game.cardholder}</p> : <></>}
-                <p>Join link: <span id={`joinlink-${game.gameToken}`}>{window.location.origin}/play/{game.gameToken}</span></p>
-                <button
-                    type="button"
-                    className="text-white bg-green-500 hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
-                    onClick={
-                        () => copyLink(`joinlink-${game.gameToken}`)
-                    }
-                >
-                    Copy Join Link
-                </button>
-                <button
-                    type="button"
-                    className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
-                    onClick={
-                        () => playGame(game.gameToken)
-                    }
-                >
-                    Play Game
-                </button>
-            </div>
-        ));
+        gameList = (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{
+                games.data.map( game => (
+                    <div key={game.gameToken} className="p-2 m-2 rounded-lg border-2 border-black bg-floral-white">
+                        <p>Creator email: {game.creatorEmail === localStorage.getItem("email") ? game.creatorEmail + " (you)" : game.creatorEmail}</p>
+                        <p>Superuser: {game.players.find( player => player.owner ).name}</p>
+                        <p>Players: {game.players.length}</p>
+                        <p>Deck left: {game.deck.length}</p>
+                        {game.cardholder ? <p>Cardholder: {game.cardholder}</p> : <></>}
+                        <p>Join link: <span id={`joinlink-${game.gameToken}`}>{window.location.origin}/play/{game.gameToken}</span></p>
+                        {game.creatorEmail === localStorage.getItem("email") ?
+                        <>
+                            <button
+                                type="button"
+                                className="text-white bg-red-400 hover:bg-red-600 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                                onClick={ () => handleDeleteGame(game.gameToken) }
+                            >
+                                Delete
+                            </button>
+                            <button
+                                type="button"
+                                className="text-black bg-yellow-400 hover:bg-yellow-600 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                                onClick={ () => handleTakeOver(game.gameToken) }
+                            >
+                                Take Over
+                            </button>
+                        </> :
+                        <></>}
+                        <button
+                            type="button"
+                            className="text-white bg-green-500 hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                            onClick={ () => copyLink(`joinlink-${game.gameToken}`) }
+                        >
+                            Copy Join Link
+                        </button>
+                        <button
+                            type="button"
+                            className="text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-2 py-2 mr-4"
+                            onClick={ () => playGame(game.gameToken) }
+                        >
+                            Play Game
+                        </button>
+                    </div>
+                ))
+            }</div>
+        );
     }
 
     return (

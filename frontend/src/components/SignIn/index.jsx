@@ -17,6 +17,7 @@ function SignIn({ setLoginStatus }) {
         event.preventDefault();
         const { token } = await signIn(formData);
         localStorage.setItem("userToken", token);
+        localStorage.setItem("email", formData.email);
         setLoginStatus(true);
         navigate("/");
     }
