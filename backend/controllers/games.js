@@ -6,7 +6,6 @@ const jwt = require("jwt-simple");
 const jwtConfig = require("../../jwt.config");
 
 const models = require("../models");
-const { findById } = require("../models/user");
     const cardModel = models.Card;
     const gameModel = models.Game;
 
@@ -144,7 +143,7 @@ router.post("/:gameToken", (req, res) => {
 router.get("/:gameToken/:playerToken", (req, res) => {
     gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
         if (game === null) {
-            res.status(404).send(`game token "${req.params.gameToken}" not found`);
+            res.status(404).json({ invalidGameToken: true });
         } else {
             let playerInGame = false;
             let playerIsOwner;
@@ -159,7 +158,7 @@ router.get("/:gameToken/:playerToken", (req, res) => {
                 }
             }
             if (!playerInGame) {
-                res.status(404).send(`game with token "${req.params.gameToken}" has no player with token "${req.params.playerToken}".`);
+                res.status(404).json({ invalidPlayerToken: true });
             } else {
                 if (playerName === game.cardholder) {
                     cardModel.findById(game.deck[game.deck.length - 1]).then( card => {
@@ -172,6 +171,7 @@ router.get("/:gameToken/:playerToken", (req, res) => {
                                 currentTurn: game.currentTurn,
                                 owner: playerIsOwner,
                                 playerName: playerName,
+                                deckLeft: game.deck.length,
                                 playerIsCardholder: true,
                                 cardHeld: card
                             });
@@ -184,6 +184,7 @@ router.get("/:gameToken/:playerToken", (req, res) => {
                         currentTurn: game.currentTurn,
                         owner: playerIsOwner,
                         playerName: playerName,
+                        deckLeft: game.deck.length,
                         playerIsCardholder: false
                     });
                 }

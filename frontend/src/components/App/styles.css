@@ -51,3 +51,8 @@
 .bg-floral-white {
     background-color: var(--floral-white);
 }
+
+.atkinson-caps {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    text-transform: uppercase;
+}

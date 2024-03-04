@@ -7,7 +7,6 @@ function PlayGame() {
     const [playerToken, setPlayerToken] = useState({ loaded: false });
     const [gameState, setGameState] = useState({ loaded: false });
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
-    const [heldCard, setHeldCard] = useState({ loaded: false });
 
     const params = useParams();
     const gameToken = params.gameToken;
@@ -30,11 +29,6 @@ function PlayGame() {
         if (playerToken.loaded) {
             pollGame(gameToken, playerToken.data).then( polledState => {
                 setGameState({ data: polledState, loaded: true });
-                if (polledState.playerIsCardholder) {
-                    setHeldCard({ data: polledState.cardHeld, loaded: true });
-                } else {
-                    setHeldCard({ loaded: false });
-                }
             }).catch( () => {
                 setGameState({ loaded: false });
                 localStorage.removeItem(`ptoken-${gameToken}`);
@@ -96,8 +90,7 @@ function PlayGame() {
     // If we reach this position, we have a token and we have game data, so
     // display the game data we have.  Also, make sure the timer is running.
     function handleDrawCard() {
-        drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( (card) => {
-            setHeldCard({ data: card, loaded: true });
+        drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( () => {
             loadGameState();
         }).catch( () => {
             console.log("Draw failed, try again.");
@@ -106,7 +99,6 @@ function PlayGame() {
 
     function handleDiscard() {
         discardCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( () => {
-            setHeldCard({ loaded: false });
             loadGameState();
         }).catch( () => {
             console.log("Discard failed, try again.");
@@ -131,7 +123,7 @@ function PlayGame() {
     const drawCardButton = (
         <button
             onClick={handleDrawCard}
-            className=""
+            className={"text-white font-medium rounded-lg text-sm px-2 py-2" + ((!gameState.loaded || !gameState.data.cardholder) ? " bg-blue-500 hover:bg-blue-700" : " bg-slate-500" )}
             disabled={gameState.loaded && gameState.data.cardholder}
             type="button"
         >
@@ -142,6 +134,7 @@ function PlayGame() {
     const discardButton = (
         <button
             onClick={handleDiscard}
+            className={"text-white font-medium rounded-lg text-sm px-2 py-2" + ((!gameState.loaded || gameState.data.playerIsCardholder) ? " bg-green-500 hover:bg-green-700" : " bg-slate-500")}
             disabled={gameState.loaded && !gameState.data.playerIsCardholder}
             type="button"
         >
@@ -152,6 +145,8 @@ function PlayGame() {
     const leaveButton = (
         <button
             onClick={handleLeave}
+            className={"font-medium rounded-lg text-sm p-2" + ((!gameState.loaded || !gameState.data.owner) ? " text-black bg-yellow-400 hover:bg-yellow-600" : " text-white bg-slate-500")}
+            disabled={gameState.loaded && gameState.data.owner}
             type="button"
         >
             Leave
@@ -159,13 +154,18 @@ function PlayGame() {
     )
 
     let cardMessage;
-    if (heldCard.loaded) {
-        cardMessage = (
-            <>
-                <p>Target: {heldCard.data.target}</p>
-                <p>Blockers: {heldCard.data.blockers.join(", ")}</p>
-            </>
-        );
+    if (gameState.loaded && gameState.data.playerIsCardholder) {
+        cardMessage = <div className="text-center mx-auto my-auto">
+            <div className={"text-center text-xl mx-auto p-2 rounded-lg border-2 border-white atkinson-caps min-w-48 bg-" + gameState.data.cardHeld.bgColor}>
+                <p>{gameState.data.cardHeld.target}</p>
+                <hr />
+                {gameState.data.cardHeld.blockers.map( blocker => (
+                    <p key={blocker}>{blocker}</p>
+                ))}
+            </div>
+        </div>;
+    } else if (gameState.loaded && gameState.data.cardholder.length > 0) {
+        cardMessage = <p>{gameState.data.cardholder} is holding a card.</p>;
     } else {
         cardMessage = <p>No card held.</p>;
     }
@@ -173,36 +173,43 @@ function PlayGame() {
     let manageUsers;
     if (gameState.loaded && gameState.data.owner) {
         manageUsers = (
-            <>
-                {gameState.data.players.map( player => (
-                    <div
-                        key={player}
-                    >
-                        <p>{player}</p>
+            <div className="border-2 border-black bg-floral-white rounded-lg m-4 p-4 flex flex-col flex-start min-w-96 max-w-96">
+                <p className="text-center">User Management</p>
+                {gameState.data.players.filter(player => player != gameState.data.playerName).map( player => (
+                    <div key={player} className="bg-white rounded-lg border-2 border-black flex flex-row justify-between items-center p-1 m-1">
+                        <div>{player}</div>
                         <button
                             type="button"
+                            className="text-white bg-red-400 hover:bg-red-600 font-medium rounded-lg text-sm p-2"
                             onClick={() => handleKickPlayer(player)}
                         >
                             Kick
                         </button>
                     </div>
                 ))}
-            </>
+            </div>
         );
     } else {
-        manageUsers = <p>Not game owner, so no user management.</p>;
+        manageUsers = <></>;
     }
 
     return (
         <>
-            <p>gameToken: {params.gameToken}</p>
-            <p>playerToken: {playerToken.data}</p>
-            <p>your name: {gameState.data.playerName}</p>
-            <p>Player names: {gameState.data.players.join(", ")}</p>
-            <p>{gameState.data.cardholder.length > 0 ? `${gameState.data.cardholder} is holding a card.` : "No one is holding a card."}</p>
-            {cardMessage}
-            <p>{drawCardButton} {discardButton} {leaveButton}</p>
-            {manageUsers}
+            <div className="border-2 border-black bg-floral-white rounded-lg m-4 p-4">
+                <p>gameToken: {gameToken}</p>
+                <p>playerToken: {playerToken.data}</p>
+                <p>Players: {gameState.data.players.join(", ")}</p>
+                <p>Your Name: {gameState.data.playerName}</p>
+            </div>
+            <div className="flex flex-col lg:flex-row flex-start">
+                <div className="flex flex-col justify-between border-2 border-black bg-floral-white rounded-lg m-4 p-4 min-h-96 min-w-96 max-w-96">
+                    {cardMessage}
+                    <p className="flex flex-row justify-between">
+                        {drawCardButton} {discardButton} {leaveButton}
+                    </p>
+                </div>
+                {manageUsers}
+            </div>
         </>
     );
 }
