@@ -163,19 +163,29 @@ router.get("/:gameToken/:playerToken", (req, res) => {
                 if (playerName === game.cardholder) {
                     cardModel.findById(game.deck[game.deck.length - 1]).then( card => {
                         if (card === null) {
-                            res.status(404).send(`player holds card with id "${game.deck[game.deck.length - 1]}", but that card can't be read`);
-                        } else {
-                            res.json({
-                                players: players,
-                                cardholder: game.cardholder ? game.cardholder : "",
-                                currentTurn: game.currentTurn,
-                                owner: playerIsOwner,
-                                playerName: playerName,
-                                deckLeft: game.deck.length,
-                                playerIsCardholder: true,
-                                cardHeld: card
-                            });
+                            card = {
+                                target: "--deleted--",
+                                blockers: [
+                                    "discard",
+                                    "this",
+                                    "card",
+                                    "now,",
+                                    "please"
+                                ],
+                                bgColor: "federal-blue",
+                                author: null
+                            };
                         }
+                        res.json({
+                            players: players,
+                            cardholder: game.cardholder ? game.cardholder : "",
+                            currentTurn: game.currentTurn,
+                            owner: playerIsOwner,
+                            playerName: playerName,
+                            deckLeft: game.deck.length,
+                            playerIsCardholder: true,
+                            cardHeld: card
+                        });
                     });
                 } else {
                     res.json({

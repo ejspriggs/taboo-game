@@ -9,7 +9,6 @@ function PlayGame() {
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
 
     const params = useParams();
-    const gameToken = params.gameToken;
 
     function handleInputChange(event) {
         setName(event.target.value);
@@ -17,44 +16,61 @@ function PlayGame() {
 
     function handleSubmit(event) {
         event.preventDefault();
+        localStorage.removeItem(`ptoken-${params.gameToken}`)
         joinGame(params.gameToken, name).then( ({ playerToken }) => {
-            localStorage.setItem(`ptoken-${gameToken}`, playerToken);
+            localStorage.setItem(`ptoken-${params.gameToken}`, playerToken);
             setPlayerToken({ data: playerToken, loaded: true });
         }).catch( () => {
-            localStorage.removeItem(`ptoken-${gameToken}`);
+            localStorage.removeItem(`ptoken-${params.gameToken}`);
+            setPlayerToken({ loaded: false });
         });
     }
 
+    const joinGameForm = <div className="m-2 p-2 rounded-lg border-black border-2 bg-floral-white max-w-72">
+        <p>Join game as:</p>
+        <form id="myform" onSubmit={handleSubmit}>
+            <input
+                type="text"
+                name="name"
+                value={name}
+                onChange={handleInputChange}
+                placeholder="your name"
+                required
+            />
+        </form>
+        <input
+            type="submit"
+            form="myform"
+            className="font-medium text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-700 hover:cursor-pointer p-2"
+            value="Join"
+        />
+    </div>;
+
     function loadGameState() {
         if (playerToken.loaded) {
-            pollGame(gameToken, playerToken.data).then( polledState => {
+            pollGame(params.gameToken, playerToken.data).then( polledState => {
                 setGameState({ data: polledState, loaded: true });
             }).catch( () => {
-                setGameState({ loaded: false });
-                localStorage.removeItem(`ptoken-${gameToken}`);
                 setPlayerToken({ loaded: false });
+                localStorage.removeItem(`ptoken-${params.gameToken}`);
+                setGameState({ loaded: false });
             });
         }
     }
 
-    const joinGameForm = (
-        <>
-            <p>You can join this game!</p>
-            <form
-                id="myform"
-                onSubmit={handleSubmit}
-            >
-                <input type="text" name="name" value={name} onChange={handleInputChange} placeholder="name" required />
-            </form>
-            <input
-                type="submit"
-                form="myform"
-                value="Join!"
-            />
-        </>
-    );
-
     useEffect( () => {
+        function loadGameState() {
+            if (playerToken.loaded) {
+                pollGame(params.gameToken, playerToken.data).then( polledState => {
+                    setGameState({ data: polledState, loaded: true });
+                }).catch( () => {
+                    setPlayerToken({ loaded: false });
+                    localStorage.removeItem(`ptoken-${params.gameToken}`);
+                    setGameState({ loaded: false });
+                });
+            }
+        }
+    
         if (pollingLoop.loaded === false) {
             setPollingLoop({
                 data: setInterval(() => loadGameState(), 2000),
@@ -67,7 +83,7 @@ function PlayGame() {
                 setPollingLoop({ loaded: false })
             }
         };
-    }, []);
+    }, [params.gameToken, playerToken]);
 
     if (playerToken.loaded === false) {
         if (localStorage.getItem(`ptoken-${params.gameToken}`)) {
@@ -106,14 +122,17 @@ function PlayGame() {
     }
 
     function handleLeave() {
-        leaveGame(gameToken, playerToken.data).then( () => {
-            localStorage.removeItem(`ptoken-${gameToken}`);
+        leaveGame(params.gameToken, playerToken.data).then( () => {
+            localStorage.removeItem(`ptoken-${params.gameToken}`);
+            setPlayerToken({ loaded: false });
+        }).catch( () => {
+            localStorage.removeItem(`ptoken-${params.gameToken}`);
             setPlayerToken({ loaded: false });
         });
     }
 
     function handleKickPlayer(playerName) {
-        kickPlayer(gameToken, playerName).then( () => {
+        kickPlayer(params.gameToken, playerName).then( () => {
             loadGameState();
         }).catch( () => {
             console.log("Kick failed, try again.");
@@ -123,7 +142,7 @@ function PlayGame() {
     const drawCardButton = (
         <button
             onClick={handleDrawCard}
-            className={"text-white font-medium rounded-lg text-sm px-2 py-2" + ((!gameState.loaded || !gameState.data.cardholder) ? " bg-blue-500 hover:bg-blue-700" : " bg-slate-500" )}
+            className={"text-white font-medium rounded-lg text-sm p-2" + ((!gameState.loaded || !gameState.data.cardholder) ? " bg-blue-500 hover:bg-blue-700" : " bg-slate-500" )}
             disabled={gameState.loaded && gameState.data.cardholder}
             type="button"
         >
@@ -134,7 +153,7 @@ function PlayGame() {
     const discardButton = (
         <button
             onClick={handleDiscard}
-            className={"text-white font-medium rounded-lg text-sm px-2 py-2" + ((!gameState.loaded || gameState.data.playerIsCardholder) ? " bg-green-500 hover:bg-green-700" : " bg-slate-500")}
+            className={"text-white font-medium rounded-lg text-sm p-2" + ((!gameState.loaded || gameState.data.playerIsCardholder) ? " bg-green-500 hover:bg-green-700" : " bg-slate-500")}
             disabled={gameState.loaded && !gameState.data.playerIsCardholder}
             type="button"
         >
@@ -196,12 +215,12 @@ function PlayGame() {
     return (
         <>
             <div className="border-2 border-black bg-floral-white rounded-lg m-4 p-4">
-                <p>gameToken: {gameToken}</p>
+                <p>gameToken: {params.gameToken}</p>
                 <p>playerToken: {playerToken.data}</p>
                 <p>Players: {gameState.data.players.join(", ")}</p>
                 <p>Your Name: {gameState.data.playerName}</p>
             </div>
-            <div className="flex flex-col lg:flex-row flex-start">
+            <div className="flex flex-col md:flex-row flex-start">
                 <div className="flex flex-col justify-between border-2 border-black bg-floral-white rounded-lg m-4 p-4 min-h-96 min-w-96 max-w-96">
                     {cardMessage}
                     <p className="flex flex-row justify-between">
