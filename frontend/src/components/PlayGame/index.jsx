@@ -59,21 +59,9 @@ function PlayGame() {
     }
 
     useEffect( () => {
-        function loadGameState() {
-            if (playerToken.loaded) {
-                pollGame(params.gameToken, playerToken.data).then( polledState => {
-                    setGameState({ data: polledState, loaded: true });
-                }).catch( () => {
-                    setPlayerToken({ loaded: false });
-                    localStorage.removeItem(`ptoken-${params.gameToken}`);
-                    setGameState({ loaded: false });
-                });
-            }
-        }
-    
         if (pollingLoop.loaded === false) {
             setPollingLoop({
-                data: setInterval(() => loadGameState(), 2000),
+                data: setInterval(loadGameState, 2000),
                 loaded: true
             });
         }
