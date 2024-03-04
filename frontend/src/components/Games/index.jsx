@@ -14,7 +14,6 @@ function Games({ loginStatus }) {
         event.preventDefault();
         addGame(ownerName, localStorage.getItem("email")).then( result => {
             localStorage.setItem(`ptoken-${result.gameToken}`, result.playerToken);
-            // navigate(`/play/${result.gameToken}`);
             getGames().then( (result) => {
                 setGames({ data: result, loaded: true });
             }).catch( (error) => {
@@ -34,8 +33,6 @@ function Games({ loginStatus }) {
         if (games.loaded === false) {
             getGames().then( (result) => {
                 setGames({ data: result, loaded: true });
-            }).catch( (error) => {
-                setGames({ data: error.toJSON(), loaded: true });
             });
         }
     }, [loginStatus, navigate, games.loaded]);
@@ -44,15 +41,13 @@ function Games({ loginStatus }) {
         deleteGame(gameToken).then( () => {
             getGames().then( (result) => {
                 setGames({ data: result, loaded: true });
-            }).catch( (error) => {
-                setGames({ data: error.toJSON(), loaded: true });
             });
         })
     }
 
     function handleTakeOver(gameToken) {
-        takeOverGame(gameToken).then( ({ playerToken }) => {
-            localStorage.setItem(`ptoken-${gameToken}`, playerToken);
+        takeOverGame(gameToken).then( takeOverResult => {
+            localStorage.setItem(`ptoken-${gameToken}`, takeOverResult.playerToken);
         });
     }
 

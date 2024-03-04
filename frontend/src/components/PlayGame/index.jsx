@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { discardCard, drawCard, joinGame, kickPlayer, pollGame } from '../../../utils/backend';
+import { discardCard, drawCard, joinGame, kickPlayer, leaveGame, pollGame } from '../../../utils/backend';
 
 function PlayGame() {
-    const [playerToken, setPlayerToken] = useState({ loaded: false });
     const [name, setName] = useState("");
+    const [playerToken, setPlayerToken] = useState({ loaded: false });
     const [gameState, setGameState] = useState({ loaded: false });
     const [pollingLoop, setPollingLoop] = useState({ loaded: false });
     const [heldCard, setHeldCard] = useState({ loaded: false });
-    const [gameOwner, setGameOwner] = useState(false);
-    const [timesNotInList, setTimesNotInList] = useState(0);
 
     const params = useParams();
+    const gameToken = params.gameToken;
 
     function handleInputChange(event) {
         setName(event.target.value);
@@ -20,37 +19,26 @@ function PlayGame() {
     function handleSubmit(event) {
         event.preventDefault();
         joinGame(params.gameToken, name).then( ({ playerToken }) => {
-            localStorage.setItem(`ptoken-${params.gameToken}`, playerToken);
+            localStorage.setItem(`ptoken-${gameToken}`, playerToken);
             setPlayerToken({ data: playerToken, loaded: true });
+        }).catch( () => {
+            localStorage.removeItem(`ptoken-${gameToken}`);
         });
     }
 
     function loadGameState() {
         if (playerToken.loaded) {
-            pollGame(params.gameToken, playerToken.data).then( polledState => {
+            pollGame(gameToken, playerToken.data).then( polledState => {
                 setGameState({ data: polledState, loaded: true });
-                let playerInList = false;
-                for (let player of polledState.players) {
-                    if (player.playerToken === playerToken.data ) {
-                        setName(player.name);
-                        setGameOwner(player.owner);
-                        playerInList = true;
-                        break;
-                    }
+                if (polledState.playerIsCardholder) {
+                    setHeldCard({ data: polledState.cardHeld, loaded: true });
+                } else {
+                    setHeldCard({ loaded: false });
                 }
-                if (!playerInList) {
-                    if (timesNotInList > 2) {
-                        localStorage.removeItem(`ptoken-${params.gameToken}`);
-                        setPlayerToken({ loaded: false });
-                        setGameState({ loaded: false });
-                        setHeldCard({ loaded: false });
-                        setGameOwner(false);
-                        setTimesNotInList(0);
-                        location.reload();
-                    } else {
-                        setTimesNotInList(timesNotInList + 1);
-                    }
-                }
+            }).catch( () => {
+                setGameState({ loaded: false });
+                localStorage.removeItem(`ptoken-${gameToken}`);
+                setPlayerToken({ loaded: false });
             });
         }
     }
@@ -79,7 +67,12 @@ function PlayGame() {
                 loaded: true
             });
         }
-        return () => pollingLoop.loaded && clearInterval(pollingLoop.data);
+        return () => {
+            if (pollingLoop.loaded) {
+                clearInterval(pollingLoop.data);
+                setPollingLoop({ loaded: false })
+            }
+        };
     }, []);
 
     if (playerToken.loaded === false) {
@@ -101,7 +94,7 @@ function PlayGame() {
     }
 
     // If we reach this position, we have a token and we have game data, so
-    // display the game data we have.
+    // display the game data we have.  Also, make sure the timer is running.
     function handleDrawCard() {
         drawCard(params.gameToken, playerToken.data, gameState.data.currentTurn).then( (card) => {
             setHeldCard({ data: card, loaded: true });
@@ -120,8 +113,15 @@ function PlayGame() {
         });
     }
 
+    function handleLeave() {
+        leaveGame(gameToken, playerToken.data).then( () => {
+            localStorage.removeItem(`ptoken-${gameToken}`);
+            setPlayerToken({ loaded: false });
+        });
+    }
+
     function handleKickPlayer(playerName) {
-        kickPlayer(gameState.data.gameToken, playerName).then( () => {
+        kickPlayer(gameToken, playerName).then( () => {
             loadGameState();
         }).catch( () => {
             console.log("Kick failed, try again.");
@@ -130,7 +130,7 @@ function PlayGame() {
 
     const drawCardButton = (
         <button
-            onClick={() => handleDrawCard()}
+            onClick={handleDrawCard}
             className=""
             disabled={gameState.loaded && gameState.data.cardholder}
             type="button"
@@ -141,13 +141,22 @@ function PlayGame() {
 
     const discardButton = (
         <button
-            onClick={() => handleDiscard()}
-            disabled={gameState.loaded && gameState.data.cardholder !== name}
+            onClick={handleDiscard}
+            disabled={gameState.loaded && !gameState.data.playerIsCardholder}
             type="button"
         >
             Discard
         </button>
     );
+
+    const leaveButton = (
+        <button
+            onClick={handleLeave}
+            type="button"
+        >
+            Leave
+        </button>
+    )
 
     let cardMessage;
     if (heldCard.loaded) {
@@ -162,17 +171,17 @@ function PlayGame() {
     }
 
     let manageUsers;
-    if (gameOwner) {
+    if (gameState.loaded && gameState.data.owner) {
         manageUsers = (
             <>
                 {gameState.data.players.map( player => (
                     <div
-                        key={player.name}
+                        key={player}
                     >
-                        <p>{player.name}</p>
+                        <p>{player}</p>
                         <button
                             type="button"
-                            onClick={() => handleKickPlayer(player.name)}
+                            onClick={() => handleKickPlayer(player)}
                         >
                             Kick
                         </button>
@@ -188,21 +197,11 @@ function PlayGame() {
         <>
             <p>gameToken: {params.gameToken}</p>
             <p>playerToken: {playerToken.data}</p>
-            <p>your name: {name}</p>
-            <p>Player names: {gameState.data.players.map( player => {
-                let result = player.name;
-                if (player.owner) {
-                    result = result + " (Owner)";
-                }
-                if (playerToken.data === player.playerToken) {
-                    result = result + " (You)";
-                }
-                return result;
-            }).join(", ")
-            }</p>
+            <p>your name: {gameState.data.playerName}</p>
+            <p>Player names: {gameState.data.players.join(", ")}</p>
             <p>{gameState.data.cardholder.length > 0 ? `${gameState.data.cardholder} is holding a card.` : "No one is holding a card."}</p>
             {cardMessage}
-            <p>{drawCardButton}{discardButton}</p>
+            <p>{drawCardButton} {discardButton} {leaveButton}</p>
             {manageUsers}
         </>
     );

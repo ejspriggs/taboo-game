@@ -110,6 +110,17 @@ router.delete("/:gameToken/players/:playerName", authMiddleware, (req, res) => {
     });
 });
 
+router.delete("/:gameToken/:playerToken", (req, res) => {
+    gameModel.findOneAndUpdate(
+        { gameToken: req.params.gameToken },
+        { $pull: { players: { playerToken: req.params.playerToken } } }
+    ).then( () => {
+        res.json({ message: "success" });
+    }).catch( () => {
+        res.status(404).send("Couldn't find game.");
+    });
+});
+
 router.post("/:gameToken", (req, res) => {
     gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
         if (game === null) {
@@ -133,11 +144,50 @@ router.post("/:gameToken", (req, res) => {
 router.get("/:gameToken/:playerToken", (req, res) => {
     gameModel.findOne({ gameToken: req.params.gameToken }).then( game => {
         if (game === null) {
-            // Game doesn't exist, hence it can't be polled.
             res.status(404).send(`game token "${req.params.gameToken}" not found`);
         } else {
-            // Send back game data.
-            res.json(game);
+            let playerInGame = false;
+            let playerIsOwner;
+            let playerName;
+            let players = [];
+            for (let player of game.players) {
+                players.push(player.name);
+                if (player.playerToken == req.params.playerToken) {
+                    playerInGame = true;
+                    playerName = player.name;
+                    playerIsOwner = player.owner;
+                }
+            }
+            if (!playerInGame) {
+                res.status(404).send(`game with token "${req.params.gameToken}" has no player with token "${req.params.playerToken}".`);
+            } else {
+                if (playerName === game.cardholder) {
+                    cardModel.findById(game.deck[game.deck.length - 1]).then( card => {
+                        if (card === null) {
+                            res.status(404).send(`player holds card with id "${game.deck[game.deck.length - 1]}", but that card can't be read`);
+                        } else {
+                            res.json({
+                                players: players,
+                                cardholder: game.cardholder ? game.cardholder : "",
+                                currentTurn: game.currentTurn,
+                                owner: playerIsOwner,
+                                playerName: playerName,
+                                playerIsCardholder: true,
+                                cardHeld: card
+                            });
+                        }
+                    });
+                } else {
+                    res.json({
+                        players: players,
+                        cardholder: game.cardholder ? game.cardholder : "",
+                        currentTurn: game.currentTurn,
+                        owner: playerIsOwner,
+                        playerName: playerName,
+                        playerIsCardholder: false
+                    });
+                }
+            }
         }
     });
 });

@@ -89,11 +89,19 @@ export async function takeOverGame(gameToken) {
 }
 
 export async function kickPlayer(gameToken, playerName) {
-    // Kick the player whose index in the player list is given, if the logged-in user is the owner of the game.
+    // Kick the player whose name is given, if the logged-in user is the owner of the game.
     const authHeader = { headers: { 'Authorization': localStorage.getItem('userToken') } };
     const { data } = await axios.delete(
         `/api/games/${gameToken}/players/${playerName}`,
         authHeader
+    );
+    return data;
+}
+
+export async function leaveGame(gameToken, playerToken) {
+    // Kick the player whose token is given.
+    const { data } = await axios.delete(
+        `/api/games/${gameToken}/${playerToken}`
     );
     return data;
 }
