@@ -127,22 +127,24 @@ function PlayGame() {
         });
     }
 
+    const drawEnabled = gameState.loaded && gameState.data.cardholder.length === 0 && gameState.data.deckLeft > 0;
     const drawCardButton = (
         <button
             onClick={handleDrawCard}
-            className={"text-white font-medium rounded-lg text-sm p-2" + ((!gameState.loaded || !gameState.data.cardholder) ? " bg-blue-500 hover:bg-blue-700" : " bg-slate-500" )}
-            disabled={gameState.loaded && gameState.data.cardholder}
+            className={"text-white font-medium rounded-lg text-sm p-2" + (drawEnabled ? " bg-blue-500 hover:bg-blue-700" : " bg-slate-500")}
+            disabled={!drawEnabled}
             type="button"
         >
             Draw
         </button>
     );
 
+    const discardEnabled = gameState.loaded && gameState.data.playerIsCardholder;
     const discardButton = (
         <button
             onClick={handleDiscard}
-            className={"text-white font-medium rounded-lg text-sm p-2" + ((!gameState.loaded || gameState.data.playerIsCardholder) ? " bg-green-500 hover:bg-green-700" : " bg-slate-500")}
-            disabled={gameState.loaded && !gameState.data.playerIsCardholder}
+            className={"text-white font-medium rounded-lg text-sm p-2" + (discardEnabled ? " bg-green-500 hover:bg-green-700" : " bg-slate-500")}
+            disabled={!discardEnabled}
             type="button"
         >
             Discard
@@ -207,6 +209,7 @@ function PlayGame() {
                 <p>playerToken: {playerToken.data}</p>
                 <p>Players: {gameState.data.players.join(", ")}</p>
                 <p>Your Name: {gameState.data.playerName}</p>
+                <p>Deck left: {gameState.data.deckLeft}</p>
             </div>
             <div className="flex flex-col md:flex-row flex-start">
                 <div className="flex flex-col justify-between border-2 border-black bg-floral-white rounded-lg m-4 p-4 min-h-96 min-w-96 max-w-96">
