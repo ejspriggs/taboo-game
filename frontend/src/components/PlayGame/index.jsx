@@ -41,7 +41,7 @@ function PlayGame() {
         <input
             type="submit"
             form="myform"
-            className="font-medium text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-700 hover:cursor-pointer p-2"
+            className="font-medium text-sm rounded-lg text-white bg-blue-500 hover:bg-blue-700 hover:cursor-pointer p-2 mt-2"
             value="Join"
         />
     </div>;
