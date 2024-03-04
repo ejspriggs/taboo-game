@@ -41,8 +41,17 @@ router.get("/", authMiddleware, (req, res) => {
 
 router.post("/", authMiddleware, (req, res) => {
     cardModel.find({}).then( (allCards) => {
-        // TODO: Shuffle.
         const allCardIds = allCards.map( Card => Card._id );
+
+        // Fisher-Yates shuffle, via Durstenfeld and Knuth
+        let swapspace;
+        for (let i = 0; i < allCardIds.length - 1; i++) {
+            const j = Math.floor(Math.random() * (allCardIds.length - i));
+            swapspace = allCardIds[i];
+            allCardIds[i] = allCardIds[i + j];
+            allCardIds[i + j] = swapspace;
+        }
+
         let gameToken = generateToken(23); // GUID-ish, ~131 bits
         let playerToken = generateToken(8);
         const newGame = {
