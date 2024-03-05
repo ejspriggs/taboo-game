@@ -26,7 +26,7 @@ function PlayGame() {
         });
     }
 
-    const joinGameForm = <div className="m-2 p-2 rounded-lg border-black border-2 bg-floral-white max-w-72">
+    const joinGameForm = <div className="m-4 p-2 rounded-lg border-black border-2 bg-floral-white max-w-72">
         <p>Join game as:</p>
         <form id="myform" onSubmit={handleSubmit}>
             <input
