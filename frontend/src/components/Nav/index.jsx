@@ -24,7 +24,7 @@ function Nav({ loginStatus, setLoginStatus }) {
     }
 
     return (
-        <nav className="text-white font-medium bg-blue-500 text-sm flex flex-row justify-between">
+        <nav className="text-white font-medium bg-blue-500 text-sm flex flex-row justify-between px-2">
             <Link to="/" className="hover:bg-blue-700">Home</Link>
             <Link to="/about" className="hover:bg-blue-700">About</Link>
             {loggedInLinks}
