@@ -27,6 +27,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// use the React build folder for static files
+app.use(express.static(path.join(path.dirname(__dirname), 'frontend', 'dist')));
+
 let livereloadServer = undefined;
 if (process.env.ON_HEROKU === "false") {
     console.log("Processing dev-only liveload and connect-livereload configuration.");
@@ -49,6 +52,11 @@ app.use('/api/games', gamesController);
 
 app.get("/api", (req, res) => {
     res.send("This message was emitted by the backend.");
+});
+
+// Any other route not matching the routes above gets routed by React
+app.get('*', (req, res) => {
+    res.sendFile(path.join(path.dirname(__dirname), 'frontend', 'dist', 'index.html'));
 });
 
 // Start server
