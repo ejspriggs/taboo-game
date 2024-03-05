@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { discardCard, drawCard, joinGame, kickPlayer, leaveGame, pollGame } from '../../../utils/backend';
 
@@ -6,7 +6,8 @@ function PlayGame() {
     const [name, setName] = useState("");
     const [playerToken, setPlayerToken] = useState({ loaded: false });
     const [gameState, setGameState] = useState({ loaded: false });
-    const [pollingLoop, setPollingLoop] = useState({ loaded: false });
+
+    const statePollRef = useRef();
 
     const params = useParams();
 
@@ -32,6 +33,7 @@ function PlayGame() {
             <input
                 type="text"
                 name="name"
+                className="pl-1"
                 value={name}
                 onChange={handleInputChange}
                 placeholder="your name"
@@ -50,28 +52,31 @@ function PlayGame() {
         if (playerToken.loaded) {
             pollGame(params.gameToken, playerToken.data).then( polledState => {
                 setGameState({ data: polledState, loaded: true });
-            }).catch( () => {
-                setPlayerToken({ loaded: false });
-                localStorage.removeItem(`ptoken-${params.gameToken}`);
-                setGameState({ loaded: false });
+            }).catch( (error) => {
+                if (error.response && error.response.status == 404) {
+                    // 404 error from backend means our token is invalid, so stop trying to play the game.
+                    setPlayerToken({ loaded: false });
+                    localStorage.removeItem(`ptoken-${params.gameToken}`);
+                    setGameState({ loaded: false });
+                }
             });
         }
     }
 
+    // Double-useEffect() with useRef() strategy based on https://overreacted.io/making-setinterval-declarative-with-react-hooks/
     useEffect( () => {
-        if (pollingLoop.loaded === false) {
-            setPollingLoop({
-                data: setInterval(loadGameState, 2000),
-                loaded: true
-            });
+        statePollRef.current = loadGameState;
+    });
+
+    useEffect( () => {
+        function tick() {
+            statePollRef.current();
         }
-        return () => {
-            if (pollingLoop.loaded) {
-                clearInterval(pollingLoop.data);
-                setPollingLoop({ loaded: false })
-            }
-        };
-    }, [params.gameToken, playerToken]);
+
+        const loop = setInterval(tick, 2000);
+
+        return () => clearInterval(loop);
+    }, []);
 
     if (playerToken.loaded === false) {
         if (localStorage.getItem(`ptoken-${params.gameToken}`)) {
