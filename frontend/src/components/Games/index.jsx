@@ -129,7 +129,7 @@ function Games({ loginStatus }) {
                         name="ownerName"
                         value={ownerName}
                         onChange={handleInputChange}
-                        placeholder="owner name"
+                        placeholder="superuser name"
                         required
                         className="border-2 border-black pl-1 mr-4"
                     />
