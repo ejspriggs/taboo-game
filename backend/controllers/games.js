@@ -110,9 +110,22 @@ router.get("/:gameToken/superuser", authMiddleware, (req, res) => {
 router.delete("/:gameToken/players/:playerName", authMiddleware, (req, res) => {
     gameModel.findOneAndUpdate(
         { gameToken: req.params.gameToken },
-        { $pull: { players: { name: req.params.playerName } } }
+        {
+            $pull: {
+                players: {
+                    name: req.params.playerName
+                }
+            }
+        }
     ).then( () => {
-        res.json({ message: "success" });
+        gameModel.findOneAndUpdate(
+            { gameToken: req.params.gameToken, cardholder: req.params.playerName },
+            { cardholder: "" }
+        ).then( () => {
+            res.json({ message: "player kicked and card undrawn" });
+        }).catch( () => {
+            res.json({ message: "player kicked, wasn't cardholder" });
+        });
     }).catch( () => {
         res.status(404).send("Couldn't find game");
     });
