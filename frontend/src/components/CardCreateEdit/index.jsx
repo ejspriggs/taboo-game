@@ -95,7 +95,7 @@ function CardCreateEdit({ edit, loginStatus }) {
                 </div>
                 <form
                     id="myform"
-                    className="m-4 p-4 bg-floral-white border-black border-2 rounded-xl"
+                    className="m-4 p-4 bg-floral-white border-black border-2 rounded-xl max-w-96 mx-auto"
                     onSubmit={handleSubmit}
                 >
                     <input className="text-center bg-floral-white w-full outline-none" type="text" id="target" name="target" value={formData.target} onChange={handleInputChange} placeholder="target" required />
