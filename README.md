@@ -1,6 +1,8 @@
 # taboo-game
 An editable shared deck of cards, requiring a login to edit and deal, but not to draw, that combines with a voice call done in other software to enable remote play of the game Taboo.
 
+Heroku deployment: https://taboo-game-f3ac1b145f45.herokuapp.com/
+
 ## Card list
 This interface is only for registered users who are logged in.
 ![Screenshot 2024-03-06 081008](https://github.com/ejspriggs/taboo-game/assets/32990599/ba4e250a-7d2b-4958-930e-0e2b5035d2a6)
