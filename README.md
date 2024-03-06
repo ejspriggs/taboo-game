@@ -25,6 +25,7 @@ In a file in the root of the repository called .env (generally for development),
 - MONGODBURI: The connection string for a Mongo database to which you have write access.
 - JWT_SECRET_KEY: An arbitrary string JWT shares only with its own past self, to enable it to recognize all and only its own tokens.
 - ON_HEROKU: switches some functionality that's useful only for development on ("false") or off ("true")
+
 In development, run separate backend (Express) and frontend (Vite) servers at the same time with "npm run backend" and "npm run frontend" in different terminals.  The Express instance running on your configured port will be proxied to the frontend, so navigate to Vite's port (generally 5173) on localhost to use the site.
 In production, run a single server with "npm start".  This will compile everything from the frontend together, and serve it from Express on your configured port, alongside the backend API.  Where to navigate to use the site depends on details of your deployment, and is beyond the scope of this document.
 
