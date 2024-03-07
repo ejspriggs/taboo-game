@@ -3,6 +3,8 @@ An editable shared deck of cards, requiring a login to edit and deal, but not to
 
 Heroku deployment: https://taboo-game-f3ac1b145f45.herokuapp.com/
 
+# Screenshots
+
 ## Card list
 This interface is only for registered users who are logged in.
 ![Card List](https://github.com/ejspriggs/taboo-game/assets/32990599/ba4e250a-7d2b-4958-930e-0e2b5035d2a6)
@@ -37,6 +39,17 @@ In production, run a single server with "npm start".  This will compile everythi
 
 # ERD
 ![Entity Relationship Diagram](https://github.com/ejspriggs/taboo-game/assets/32990599/2d9904a0-15d4-4061-bb4e-68ab3d70dc61)
+
+# Wireframes
+
+## Card list
+![Card List](https://github.com/ejspriggs/taboo-game/assets/32990599/215f6423-8155-4961-b54b-46758f6711b8)
+
+## Game list
+![Game List](https://github.com/ejspriggs/taboo-game/assets/32990599/170ec770-e245-4efe-aa43-3233f637d4d7)
+
+## Gameplay screen
+![Gameplay Screen](https://github.com/ejspriggs/taboo-game/assets/32990599/1390517c-5129-4799-8f6c-50bcb819e221)
 
 # Major hurdles
 The two nastiest bugs to fix were both of the type, "I formed a closure without intending to, thereby causing some code to unexpectedly see old data."  This is somewhat to be expected, since closures are a significant aspect of Javascript programming that doesn't really have any analogous element in C, the language with which I have most of my experience.  To a lesser extent, handling throws+returns as function output, instead of just returns, was a stumbling block for the same reason.
