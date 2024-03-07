@@ -5,15 +5,15 @@ Heroku deployment: https://taboo-game-f3ac1b145f45.herokuapp.com/
 
 ## Card list
 This interface is only for registered users who are logged in.
-![Screenshot 2024-03-06 081008](https://github.com/ejspriggs/taboo-game/assets/32990599/ba4e250a-7d2b-4958-930e-0e2b5035d2a6)
+![Card List](https://github.com/ejspriggs/taboo-game/assets/32990599/ba4e250a-7d2b-4958-930e-0e2b5035d2a6)
 
 ## Game list
 This interface is also only for logged-in users.
-![Screenshot 2024-03-06 080909](https://github.com/ejspriggs/taboo-game/assets/32990599/6c9f6808-5f41-41e5-a98b-eefec0e74c7e)
+![Game List](https://github.com/ejspriggs/taboo-game/assets/32990599/6c9f6808-5f41-41e5-a98b-eefec0e74c7e)
 
 ## Gameplay screen
 Anyone who has a link to a game can play, but only the registered creator of the game sees the "user management" panel on the right.
-![Screenshot 2024-03-06 081043](https://github.com/ejspriggs/taboo-game/assets/32990599/0e2634d2-84cd-4a85-858e-485c89953597)
+![Play Game](https://github.com/ejspriggs/taboo-game/assets/32990599/0e2634d2-84cd-4a85-858e-485c89953597)
 
 # Technologies used
 Mongo (via Mongoose), Express, React, Node.js, Tailwind CSS
@@ -34,6 +34,9 @@ In production, run a single server with "npm start".  This will compile everythi
 - AAU, I want to play the game Taboo with the folks from the first user story, because they are more numerous than folks who will put in more effort, like me.
 - As a hiring manager, I want to see whether this Spriggs guy is any good at programs.
 - As one of Edward's friends, I'm curious what he's been working on for all this time.
+
+# ERD
+![Entity Relationship Diagram](https://github.com/ejspriggs/taboo-game/assets/32990599/287961d5-887a-4aa5-8eb3-b41fcf6d2838)
 
 # Major hurdles
 The two nastiest bugs to fix were both of the type, "I formed a closure without intending to, thereby causing some code to unexpectedly see old data."  This is somewhat to be expected, since closures are a significant aspect of Javascript programming that doesn't really have any analogous element in C, the language with which I have most of my experience.  To a lesser extent, handling throws+returns as function output, instead of just returns, was a stumbling block for the same reason.
