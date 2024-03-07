@@ -36,7 +36,7 @@ In production, run a single server with "npm start".  This will compile everythi
 - As one of Edward's friends, I'm curious what he's been working on for all this time.
 
 # ERD
-![Entity Relationship Diagram](https://github.com/ejspriggs/taboo-game/assets/32990599/287961d5-887a-4aa5-8eb3-b41fcf6d2838)
+![Entity Relationship Diagram](https://github.com/ejspriggs/taboo-game/assets/32990599/2d9904a0-15d4-4061-bb4e-68ab3d70dc61)
 
 # Major hurdles
 The two nastiest bugs to fix were both of the type, "I formed a closure without intending to, thereby causing some code to unexpectedly see old data."  This is somewhat to be expected, since closures are a significant aspect of Javascript programming that doesn't really have any analogous element in C, the language with which I have most of my experience.  To a lesser extent, handling throws+returns as function output, instead of just returns, was a stumbling block for the same reason.
